@@ -11,12 +11,12 @@ import picard.cmdline.StandardOptionDefinitions;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,29 +56,24 @@ public class CompareGtcFiles extends CommandLineProgram {
     private final List<String> errors = new ArrayList<>();
 
     // Ignored methods
-    private static final List<String> IGNORED_METHODS = new ArrayList<>();
-
-    static {
-        IGNORED_METHODS.add("getClass");
-        IGNORED_METHODS.add("getAutoCallDate");
-        IGNORED_METHODS.add("getImagingDate");
+    private static final List<String> IGNORED_METHODS = Arrays.asList(
+        "getClass",
+        "getAutocallDate",
+        "getImagingDate",
         // This is the number of TOC entries. It will be different with different versions.
-        IGNORED_METHODS.add("getNumberOfEntries");
+        "getNumberOfEntries",
         // We don't inject these in our gtcs so they will always be blank and so we don't bother comparing.
-        IGNORED_METHODS.add("getSampleName");
-        IGNORED_METHODS.add("getSamplePlate");
-        IGNORED_METHODS.add("getSampleWell");
-    }
+        "getSampleName",
+        "getSamplePlate",
+        "getSampleWell");
 
     @Override
     protected int doWork() {
         IOUtil.assertFilesAreReadable(INPUT);
 
-        try {
-            InfiniumNormalizationManifest infiniumNormalizationManifest
-                    = new InfiniumNormalizationManifest(ILLUMINA_NORMALIZATION_MANIFEST);
-            InfiniumGTCFile gtcFileOne = new InfiniumGTCFile(new DataInputStream(new FileInputStream(INPUT.get(0))), infiniumNormalizationManifest);
-            InfiniumGTCFile gtcFileTwo = new InfiniumGTCFile(new DataInputStream(new FileInputStream(INPUT.get(1))), infiniumNormalizationManifest);
+        InfiniumNormalizationManifest infiniumNormalizationManifest = new InfiniumNormalizationManifest(ILLUMINA_NORMALIZATION_MANIFEST);
+        try (InfiniumGTCFile gtcFileOne = new InfiniumGTCFile(new DataInputStream(new FileInputStream(INPUT.get(0))), infiniumNormalizationManifest);
+             InfiniumGTCFile gtcFileTwo = new InfiniumGTCFile(new DataInputStream(new FileInputStream(INPUT.get(1))), infiniumNormalizationManifest)) {
             compareGTCFiles(gtcFileOne, gtcFileTwo);
 
             // Report errors and exit 1 if any are detected.
@@ -88,7 +83,7 @@ public class CompareGtcFiles extends CommandLineProgram {
                 }
                 return 1;
             }
-        } catch (IOException | IllegalAccessException | InvocationTargetException e) {
+        } catch (Exception e) {
             throw new PicardException("File error: ", e);
         }
         return 0;
