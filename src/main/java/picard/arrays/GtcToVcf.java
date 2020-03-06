@@ -250,7 +250,7 @@ public class GtcToVcf extends CommandLineProgram {
         }
     }
 
-    private Sex getFingerprintSex(final File file) {
+    static Sex getFingerprintSex(final File file) {
         if (file != null) {
             try (VCFFileReader reader = new VCFFileReader(file, false)) {
                 final VCFHeader header = reader.getFileHeader();
