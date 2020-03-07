@@ -141,7 +141,7 @@ Please cite this repository when using Picard tools for your publications.
 ```
 
 
-Picard is migrating to semantic versioning (http://semver.org/). We will eventually adhere to it strictly and bump our major version whenever there are breaking changes to our API, but until we more clearly define what constitutes our official API, clients should assume that every release potentially contains at least minor changes to public methods.
+Picard is migrating to semantic versioning (http://semver.org/). We will adhere to it strictly and bump our major version whenever there are breaking changes to our API, but until we more clearly define what constitutes our official API, clients should assume that every release potentially contains at least minor changes to public methods.
 
 Please see the [Picard Documentation](http://broadinstitute.github.io/picard) for more information.
 
